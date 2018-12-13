@@ -35,7 +35,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Google.Protobuf.Reflection
 {
@@ -89,9 +88,9 @@ namespace Google.Protobuf.Reflection
         /// Leading whitespace and the comment marker ("//") are removed from each line.
         /// The list is never null, but may be empty. Likewise each element is never null, but may be empty.
         /// </summary>
-        public IReadOnlyList<string> LeadingDetachedComments { get; }
+        public IList<string> LeadingDetachedComments { get; }
 
-        private DescriptorDeclaration(IDescriptor descriptor, Location location)
+        private DescriptorDeclaration(IDescriptor descriptor, SourceCodeInfo.Types.Location location)
         {
             // TODO: Validation
             Descriptor = descriptor;
@@ -106,7 +105,9 @@ namespace Google.Protobuf.Reflection
             LeadingDetachedComments = new ReadOnlyCollection<string>(location.LeadingDetachedComments.ToList());
         }
 
-        internal static DescriptorDeclaration FromProto(IDescriptor descriptor, Location location) =>
-            new DescriptorDeclaration(descriptor, location);
+        internal static DescriptorDeclaration FromProto(IDescriptor descriptor, SourceCodeInfo.Types.Location location)
+        {
+            return new DescriptorDeclaration(descriptor, location);
+        }
     }
 }

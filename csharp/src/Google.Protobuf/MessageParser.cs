@@ -184,8 +184,10 @@ namespace Google.Protobuf
         /// </summary>
         /// <param name="discardUnknownFields">Whether or not to discard unknown fields when parsing.</param>
         /// <returns>A newly configured message parser.</returns>
-        public MessageParser WithDiscardUnknownFields(bool discardUnknownFields) =>
-            new MessageParser(factory, discardUnknownFields);
+        public MessageParser WithDiscardUnknownFields(bool discardUnknownFields)
+        {
+            return new MessageParser(factory, discardUnknownFields);
+        }
     }
 
     /// <summary>
@@ -335,7 +337,9 @@ namespace Google.Protobuf
         /// </summary>
         /// <param name="discardUnknownFields">Whether or not to discard unknown fields when parsing.</param>
         /// <returns>A newly configured message parser.</returns>
-        public new MessageParser<T> WithDiscardUnknownFields(bool discardUnknownFields) =>
-            new MessageParser<T>(factory, discardUnknownFields);
+        public new MessageParser<T> WithDiscardUnknownFields(bool discardUnknownFields)
+        {
+            return new MessageParser<T>(factory, discardUnknownFields);
+        }
     }
 }

@@ -37,7 +37,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Google.Protobuf.Reflection
 {
@@ -58,7 +57,7 @@ namespace Google.Protobuf.Reflection
             ForceReflectionInitialization<Value.KindOneofCase>();
         }
 
-        private readonly Lazy<Dictionary<IDescriptor, DescriptorDeclaration>> declarations;
+        private readonly Dictionary<IDescriptor, DescriptorDeclaration> declarations;
 
         private FileDescriptor(ByteString descriptorData, FileDescriptorProto proto, IEnumerable<FileDescriptor> dependencies, DescriptorPool pool, bool allowUnknownDependencies, GeneratedClrTypeInfo generatedCodeInfo)
         {
@@ -73,23 +72,23 @@ namespace Google.Protobuf.Reflection
 
             MessageTypes = DescriptorUtil.ConvertAndMakeReadOnly(proto.MessageType,
                                                                  (message, index) =>
-                                                                 new MessageDescriptor(message, this, null, index, generatedCodeInfo?.NestedTypes[index]));
+                                                                 new MessageDescriptor(message, this, null, index, generatedCodeInfo != null ? generatedCodeInfo.NestedTypes[index] : null));
 
             EnumTypes = DescriptorUtil.ConvertAndMakeReadOnly(proto.EnumType,
                                                               (enumType, index) =>
-                                                              new EnumDescriptor(enumType, this, null, index, generatedCodeInfo?.NestedEnums[index]));
+                                                              new EnumDescriptor(enumType, this, null, index, generatedCodeInfo != null ? generatedCodeInfo.NestedEnums[index] : null));
 
             Services = DescriptorUtil.ConvertAndMakeReadOnly(proto.Service,
                                                              (service, index) =>
                                                              new ServiceDescriptor(service, this, index));
 
-            declarations = new Lazy<Dictionary<IDescriptor, DescriptorDeclaration>>(CreateDeclarationMap, LazyThreadSafetyMode.ExecutionAndPublication);
+            declarations = CreateDeclarationMap();
         }
 
         private Dictionary<IDescriptor, DescriptorDeclaration> CreateDeclarationMap()
         {
             var dictionary = new Dictionary<IDescriptor, DescriptorDeclaration>();
-            foreach (var location in Proto.SourceCodeInfo?.Location ?? Enumerable.Empty<Location>())
+            foreach (var location in Proto.SourceCodeInfo != null ? (Proto.SourceCodeInfo.Location != null ? Proto.SourceCodeInfo.Location : Enumerable.Empty<SourceCodeInfo.Types.Location>()) : Enumerable.Empty<SourceCodeInfo.Types.Location>())
             {
                 var descriptor = FindDescriptorForPath(location.Path);
                 if (descriptor != null)
@@ -109,7 +108,7 @@ namespace Google.Protobuf.Reflection
             {
                 return null;
             }
-            IReadOnlyList<DescriptorBase> topLevelList = GetNestedDescriptorListForField(path[0]);
+            IList<DescriptorBase> topLevelList = GetNestedDescriptorListForField(path[0]);
             DescriptorBase current = GetDescriptorFromList(topLevelList, path[1]);
 
             for (int i = 2; current != null && i < path.Count; i += 2)
@@ -120,7 +119,7 @@ namespace Google.Protobuf.Reflection
             return current;
         }
 
-        private DescriptorBase GetDescriptorFromList(IReadOnlyList<DescriptorBase> list, int index)
+        private DescriptorBase GetDescriptorFromList(IList<DescriptorBase> list, int index)
         {
             // This is fine: it may be a newer version of protobuf than we understand, with a new descriptor
             // field.
@@ -138,16 +137,16 @@ namespace Google.Protobuf.Reflection
             return list[index];
         }
 
-        private IReadOnlyList<DescriptorBase> GetNestedDescriptorListForField(int fieldNumber)
+        private IList<DescriptorBase> GetNestedDescriptorListForField(int fieldNumber)
         {
             switch (fieldNumber)
             {
                 case FileDescriptorProto.ServiceFieldNumber:
-                    return (IReadOnlyList<DescriptorBase>) Services;
+                    return (IList<DescriptorBase>) Services;
                 case FileDescriptorProto.MessageTypeFieldNumber:
-                    return (IReadOnlyList<DescriptorBase>) MessageTypes;
+                    return (IList<DescriptorBase>) MessageTypes;
                 case FileDescriptorProto.EnumTypeFieldNumber:
-                    return (IReadOnlyList<DescriptorBase>) EnumTypes;
+                    return (IList<DescriptorBase>) EnumTypes;
                 default:
                     return null;
             }
@@ -156,7 +155,7 @@ namespace Google.Protobuf.Reflection
         internal DescriptorDeclaration GetDeclaration(IDescriptor descriptor)
         {
             DescriptorDeclaration declaration;
-            declarations.Value.TryGetValue(descriptor, out declaration);
+            declarations.TryGetValue(descriptor, out declaration);
             return declaration;
         }
 
@@ -217,13 +216,19 @@ namespace Google.Protobuf.Reflection
         /// <value>
         /// The file name.
         /// </value>
-        public string Name => Proto.Name;
+        public string Name
+        {
+            get { return Proto.Name; }
+        }
 
         /// <summary>
         /// The package as declared in the .proto file. This may or may not
         /// be equivalent to the .NET namespace of the generated classes.
         /// </summary>
-        public string Package => Proto.Package;
+        public string Package
+        {
+            get { return Proto.Package; }
+        }
 
         /// <value>
         /// Unmodifiable list of top-level message types declared in this file.
@@ -258,12 +263,18 @@ namespace Google.Protobuf.Reflection
         /// <value>
         /// Implementation of IDescriptor.FullName - just returns the same as Name.
         /// </value>
-        string IDescriptor.FullName => Name;
+        string IDescriptor.FullName
+        {
+            get { return Name; }
+        }
 
         /// <value>
         /// Implementation of IDescriptor.File - just returns this descriptor.
         /// </value>
-        FileDescriptor IDescriptor.File => this;
+        FileDescriptor IDescriptor.File
+        {
+            get { return this; }
+        }
 
         /// <value>
         /// Pool containing symbol descriptors.
@@ -402,9 +413,9 @@ namespace Google.Protobuf.Reflection
         /// depends on C, then the descriptors must be presented in the order C, B, A.) This is compatible
         /// with the order in which protoc provides descriptors to plugins.</param>
         /// <returns>The file descriptors corresponding to <paramref name="descriptorData"/>.</returns>
-        public static IReadOnlyList<FileDescriptor> BuildFromByteStrings(IEnumerable<ByteString> descriptorData)
+        public static IList<FileDescriptor> BuildFromByteStrings(IEnumerable<ByteString> descriptorData)
         {
-            ProtoPreconditions.CheckNotNull(descriptorData, nameof(descriptorData));
+            ProtoPreconditions.CheckNotNull(descriptorData, "descriptorData");
 
             // TODO: See if we can build a single DescriptorPool instead of building lots of them.
             // This will all behave correctly, but it's less efficient than we'd like.
@@ -467,7 +478,10 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// The (possibly empty) set of custom options for this file.
         /// </summary>
-        public CustomOptions CustomOptions => Proto.Options?.CustomOptions ?? CustomOptions.Empty;
+        public CustomOptions CustomOptions
+        {
+            get { return Proto.Options != null ? (Proto.Options.CustomOptions != null ? Proto.Options.CustomOptions : CustomOptions.Empty) : CustomOptions.Empty; }
+        }
 
         /// <summary>
         /// Performs initialization for the given generic type argument.
@@ -480,6 +494,9 @@ namespace Google.Protobuf.Reflection
         /// accordingly.
         /// </remarks>
         /// <typeparam name="T">The type to force initialization for.</typeparam>
-        public static void ForceReflectionInitialization<T>() => ReflectionUtil.ForceInitialize<T>();
+        public static void ForceReflectionInitialization<T>()
+        {
+            ReflectionUtil.ForceInitialize<T>();
+        }
     }
 }

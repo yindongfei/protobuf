@@ -103,7 +103,10 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// The brief name of the descriptor's target.
         /// </summary>
-        public override string Name => Proto.Name;
+        public override string Name
+        {
+            get { return Proto.Name; }
+        }
 
         /// <summary>
         /// Returns the accessor for this field.
@@ -128,8 +131,11 @@ namespace Google.Protobuf.Reflection
         /// them.
         /// </para>
         /// </remarks>
-        public IFieldAccessor Accessor => accessor;
-        
+        public IFieldAccessor Accessor
+        {
+            get { return accessor; }
+        }
+
         /// <summary>
         /// Maps a field type as included in the .proto file to a FieldType.
         /// </summary>
@@ -181,32 +187,59 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// Returns <c>true</c> if this field is a repeated field; <c>false</c> otherwise.
         /// </summary>
-        public bool IsRepeated => Proto.Label == FieldDescriptorProto.Types.Label.Repeated;
+        public bool IsRepeated
+        {
+            get { return Proto.Label == FieldDescriptorProto.Types.Label.Repeated; }
+        }
 
         /// <summary>
         /// Returns <c>true</c> if this field is a required field; <c>false</c> otherwise.
         /// </summary>
-        public bool IsRequired => Proto.Label == FieldDescriptorProto.Types.Label.Required;
+        public bool IsRequired
+        {
+            get { return Proto.Label == FieldDescriptorProto.Types.Label.Required; }
+        }
 
         /// <summary>
         /// Returns <c>true</c> if this field is a map field; <c>false</c> otherwise.
         /// </summary>
-        public bool IsMap => fieldType == FieldType.Message && messageType.Proto.Options != null && messageType.Proto.Options.MapEntry;
+        public bool IsMap
+        {
+            get
+            {
+                return fieldType == FieldType.Message && messageType.Proto.Options != null &&
+                       messageType.Proto.Options.MapEntry;
+            }
+        }
 
         /// <summary>
         /// Returns <c>true</c> if this field is a packed, repeated field; <c>false</c> otherwise.
         /// </summary>
-        public bool IsPacked => File.Proto.Syntax == "proto2" ? Proto.Options?.Packed ?? false : !Proto.Options.HasPacked || Proto.Options.Packed;
+        public bool IsPacked
+        {
+            get
+            {
+                return File.Proto.Syntax == "proto2"
+                    ? (Proto.Options != null && Proto.Options.Packed)
+                    : !Proto.Options.HasPacked || Proto.Options.Packed;
+            }
+        }
 
         /// <summary>
         /// Returns the type of the field.
         /// </summary>
-        public FieldType FieldType => fieldType;
+        public FieldType FieldType
+        {
+            get { return fieldType; }
+        }
 
         /// <summary>
         /// Returns the field number declared in the proto file.
         /// </summary>
-        public int FieldNumber => Proto.Number;
+        public int FieldNumber
+        {
+            get { return Proto.Number; }
+        }
 
         /// <summary>
         /// Compares this descriptor with another one, ordering in "canonical" order
@@ -257,7 +290,10 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// The (possibly empty) set of custom options for this field.
         /// </summary>
-        public CustomOptions CustomOptions => Proto.Options?.CustomOptions ?? CustomOptions.Empty;
+        public CustomOptions CustomOptions
+        {
+            get { return Proto.Options != null ? Proto.Options.CustomOptions ?? CustomOptions.Empty : CustomOptions.Empty; }
+        }
 
         /// <summary>
         /// Look up and cross-link all field types etc.

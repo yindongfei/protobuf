@@ -67,7 +67,10 @@ namespace Google.Protobuf.Reflection
             SampleEnumMethod();
         }
 
-        internal static void ForceInitialize<T>() => new ReflectionHelper<IMessage, T>();
+        internal static void ForceInitialize<T>()
+        {
+            new ReflectionHelper<IMessage, T>();
+        }
 
         /// <summary>
         /// Empty Type[] used when calling GetProperty to force property instead of indexer fetching.
@@ -80,8 +83,10 @@ namespace Google.Protobuf.Reflection
         /// </summary>
         /// <param name="method">The method to create a delegate for, which must be declared in an IMessage
         /// implementation.</param>
-        internal static Func<IMessage, object> CreateFuncIMessageObject(MethodInfo method) =>
-            GetReflectionHelper(method.DeclaringType, method.ReturnType).CreateFuncIMessageObject(method);
+        internal static Func<IMessage, object> CreateFuncIMessageObject(MethodInfo method)
+        {
+            return GetReflectionHelper(method.DeclaringType, method.ReturnType).CreateFuncIMessageObject(method);
+        }
 
         /// <summary>
         /// Creates a delegate which will cast the argument to the type that declares the method,
@@ -91,8 +96,10 @@ namespace Google.Protobuf.Reflection
         /// </summary>
         /// <param name="method">The method to create a delegate for, which must be declared in an IMessage
         /// implementation.</param>
-        internal static Func<IMessage, int> CreateFuncIMessageInt32(MethodInfo method) =>
-            GetReflectionHelper(method.DeclaringType, method.ReturnType).CreateFuncIMessageInt32(method);
+        internal static Func<IMessage, int> CreateFuncIMessageInt32(MethodInfo method)
+        {
+            return GetReflectionHelper(method.DeclaringType, method.ReturnType).CreateFuncIMessageInt32(method);
+        }
 
         /// <summary>
         /// Creates a delegate which will execute the given method after casting the first argument to
@@ -100,8 +107,11 @@ namespace Google.Protobuf.Reflection
         /// </summary>
         /// <param name="method">The method to create a delegate for, which must be declared in an IMessage
         /// implementation.</param>
-        internal static Action<IMessage, object> CreateActionIMessageObject(MethodInfo method) =>
-            GetReflectionHelper(method.DeclaringType, method.GetParameters()[0].ParameterType).CreateActionIMessageObject(method);
+        internal static Action<IMessage, object> CreateActionIMessageObject(MethodInfo method)
+        {
+            return GetReflectionHelper(method.DeclaringType, method.GetParameters()[0].ParameterType)
+                .CreateActionIMessageObject(method);
+        }
 
         /// <summary>
         /// Creates a delegate which will execute the given method after casting the first argument to
@@ -109,11 +119,15 @@ namespace Google.Protobuf.Reflection
         /// </summary>
         /// <param name="method">The method to create a delegate for, which must be declared in an IMessage
         /// implementation.</param>
-        internal static Action<IMessage> CreateActionIMessage(MethodInfo method) =>
-            GetReflectionHelper(method.DeclaringType, typeof(object)).CreateActionIMessage(method);
+        internal static Action<IMessage> CreateActionIMessage(MethodInfo method)
+        {
+            return GetReflectionHelper(method.DeclaringType, typeof(object)).CreateActionIMessage(method);
+        }
 
-        internal static Func<IMessage, bool> CreateFuncIMessageBool(MethodInfo method) =>
-            GetReflectionHelper(method.DeclaringType, method.ReturnType).CreateFuncIMessageBool(method);
+        internal static Func<IMessage, bool> CreateFuncIMessageBool(MethodInfo method)
+        {
+            return GetReflectionHelper(method.DeclaringType, method.ReturnType).CreateFuncIMessageBool(method);
+        }
 
         /// <summary>
         /// Creates a reflection helper for the given type arguments. Currently these are created on demand
@@ -121,8 +135,10 @@ namespace Google.Protobuf.Reflection
         /// they can be garbage collected. We could cache them by type if that proves to be important, but creating
         /// an object is pretty cheap.
         /// </summary>
-        private static IReflectionHelper GetReflectionHelper(Type t1, Type t2) =>
-            (IReflectionHelper) Activator.CreateInstance(typeof(ReflectionHelper<,>).MakeGenericType(t1, t2));
+        private static IReflectionHelper GetReflectionHelper(Type t1, Type t2)
+        {
+            return (IReflectionHelper)Activator.CreateInstance(typeof(ReflectionHelper<,>).MakeGenericType(t1, t2));
+        }
 
         // Non-generic interface allowing us to use an instance of ReflectionHelper<T1, T2> without statically
         // knowing the types involved.
@@ -186,14 +202,14 @@ namespace Google.Protobuf.Reflection
         // details about why we're doing this.
 
         // Deliberately not inside the generic type. We only want to check this once.
-        private static bool CanConvertEnumFuncToInt32Func { get; } = CheckCanConvertEnumFuncToInt32Func();
+        private static bool CanConvertEnumFuncToInt32Func { get { return  CheckCanConvertEnumFuncToInt32Func(); } }
 
         private static bool CheckCanConvertEnumFuncToInt32Func()
         {
             try
             {
                 // Try to do the conversion using reflection, so we can see whether it's supported.
-                MethodInfo method = typeof(ReflectionUtil).GetMethod(nameof(SampleEnumMethod));
+                MethodInfo method = typeof(ReflectionUtil).GetMethod("SampleEnumMethod");
                 // If this passes, we're in a reasonable runtime.
                 method.CreateDelegate(typeof(Func<int>));
                 return true;
@@ -210,6 +226,9 @@ namespace Google.Protobuf.Reflection
         }
 
         // Public to make the reflection simpler.
-        public static SampleEnum SampleEnumMethod() => SampleEnum.X;
+        public static SampleEnum SampleEnumMethod()
+        {
+            return SampleEnum.X;
+        }
     }
 }

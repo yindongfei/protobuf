@@ -72,12 +72,12 @@ namespace Google.Protobuf.Reflection
         /// </summary>
         public override string Name { get { return proto.Name; } }
 
-        internal override IReadOnlyList<DescriptorBase> GetNestedDescriptorListForField(int fieldNumber)
+        internal override IList<DescriptorBase> GetNestedDescriptorListForField(int fieldNumber)
         {
             switch (fieldNumber)
             {
                 case EnumDescriptorProto.ValueFieldNumber:
-                    return (IReadOnlyList<DescriptorBase>) Values;
+                    return (IList<DescriptorBase>) Values;
                 default:
                     return null;
             }
@@ -127,6 +127,9 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// The (possibly empty) set of custom options for this enum.
         /// </summary>
-        public CustomOptions CustomOptions => Proto.Options?.CustomOptions ?? CustomOptions.Empty;
+        public CustomOptions CustomOptions
+        {
+            get { return Proto.Options != null ? Proto.Options.CustomOptions ?? CustomOptions.Empty : CustomOptions.Empty; }
+        }
     }
 }

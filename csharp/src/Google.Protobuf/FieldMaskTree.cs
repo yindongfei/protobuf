@@ -62,7 +62,7 @@ namespace Google.Protobuf
 
         internal sealed class Node
         {
-            public Dictionary<string, Node> Children { get; } = new Dictionary<string, Node>();
+            public Dictionary<string, Node> Children { get { return  new Dictionary<string, Node>(); } }
         }
 
         private readonly Node root = new Node();

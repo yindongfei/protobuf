@@ -40,8 +40,10 @@ namespace Google.Protobuf.Compatibility
     // MethodInfo.CreateDelegate. Proxy from one to the other on .NET 3.5...
     internal static class MethodInfoExtensions
     {
-        internal static Delegate CreateDelegate(this MethodInfo method, Type type) =>
-            Delegate.CreateDelegate(type, method);
+        internal static Delegate CreateDelegate(this MethodInfo method, Type type)
+        {
+            return Delegate.CreateDelegate(type, method);
+        }
     }
 }
 #endif

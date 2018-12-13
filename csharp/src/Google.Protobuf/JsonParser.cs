@@ -380,7 +380,7 @@ namespace Google.Protobuf
         /// <exception cref="InvalidProtocolBufferException">The JSON does not represent a Protocol Buffers message correctly</exception>
         public T Parse<T>(string json) where T : IMessage, new()
         {
-            ProtoPreconditions.CheckNotNull(json, nameof(json));
+            ProtoPreconditions.CheckNotNull(json, "json");
             return Parse<T>(new StringReader(json));
         }
 
@@ -393,7 +393,7 @@ namespace Google.Protobuf
         /// <exception cref="InvalidProtocolBufferException">The JSON does not represent a Protocol Buffers message correctly</exception>
         public T Parse<T>(TextReader jsonReader) where T : IMessage, new()
         {
-            ProtoPreconditions.CheckNotNull(jsonReader, nameof(jsonReader));
+            ProtoPreconditions.CheckNotNull(jsonReader, "jsonReader");
             T message = new T();
             Merge(message, jsonReader);
             return message;
@@ -408,8 +408,8 @@ namespace Google.Protobuf
         /// <exception cref="InvalidProtocolBufferException">The JSON does not represent a Protocol Buffers message correctly</exception>
         public IMessage Parse(string json, MessageDescriptor descriptor)
         {
-            ProtoPreconditions.CheckNotNull(json, nameof(json));
-            ProtoPreconditions.CheckNotNull(descriptor, nameof(descriptor));
+            ProtoPreconditions.CheckNotNull(json, "json");
+            ProtoPreconditions.CheckNotNull(descriptor, "descriptor");
             return Parse(new StringReader(json), descriptor);
         }
 
@@ -422,8 +422,8 @@ namespace Google.Protobuf
         /// <exception cref="InvalidProtocolBufferException">The JSON does not represent a Protocol Buffers message correctly</exception>
         public IMessage Parse(TextReader jsonReader, MessageDescriptor descriptor)
         {
-            ProtoPreconditions.CheckNotNull(jsonReader, nameof(jsonReader));
-            ProtoPreconditions.CheckNotNull(descriptor, nameof(descriptor));
+            ProtoPreconditions.CheckNotNull(jsonReader, "jsonReader");
+            ProtoPreconditions.CheckNotNull(descriptor, "descriptor");
             IMessage message = descriptor.Parser.CreateTemplate();
             Merge(message, jsonReader);
             return message;
@@ -1010,7 +1010,7 @@ namespace Google.Protobuf
             private Settings(int recursionLimit, TypeRegistry typeRegistry, bool ignoreUnknownFields)
             {
                 RecursionLimit = recursionLimit;
-                TypeRegistry = ProtoPreconditions.CheckNotNull(typeRegistry, nameof(typeRegistry));
+                TypeRegistry = ProtoPreconditions.CheckNotNull(typeRegistry, "typeRegistry");
                 IgnoreUnknownFields = ignoreUnknownFields;
             }
 
@@ -1036,25 +1036,31 @@ namespace Google.Protobuf
             /// when unknown fields are encountered.
             /// </summary>
             /// <param name="ignoreUnknownFields"><c>true</c> if unknown fields should be ignored when parsing; <c>false</c> to throw an exception.</param>
-            public Settings WithIgnoreUnknownFields(bool ignoreUnknownFields) =>
-                new Settings(RecursionLimit, TypeRegistry, ignoreUnknownFields);
+            public Settings WithIgnoreUnknownFields(bool ignoreUnknownFields)
+            {
+                return new Settings(RecursionLimit, TypeRegistry, ignoreUnknownFields);
+            }
 
             /// <summary>
             /// Creates a new <see cref="Settings"/> object based on this one, but with the specified recursion limit.
             /// </summary>
             /// <param name="recursionLimit">The new recursion limit.</param>
-            public Settings WithRecursionLimit(int recursionLimit) =>
-                new Settings(recursionLimit, TypeRegistry, IgnoreUnknownFields);
+            public Settings WithRecursionLimit(int recursionLimit)
+            {
+                return new Settings(recursionLimit, TypeRegistry, IgnoreUnknownFields);
+            }
 
             /// <summary>
             /// Creates a new <see cref="Settings"/> object based on this one, but with the specified type registry.
             /// </summary>
             /// <param name="typeRegistry">The new type registry. Must not be null.</param>
-            public Settings WithTypeRegistry(TypeRegistry typeRegistry) =>
-                new Settings(
+            public Settings WithTypeRegistry(TypeRegistry typeRegistry)
+            {
+                return new Settings(
                     RecursionLimit,
-                    ProtoPreconditions.CheckNotNull(typeRegistry, nameof(typeRegistry)),
+                    ProtoPreconditions.CheckNotNull(typeRegistry, "typeRegistry"),
                     IgnoreUnknownFields);
+            }
         }
     }
 }

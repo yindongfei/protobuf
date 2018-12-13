@@ -103,7 +103,10 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// The (possibly empty) set of custom options for this oneof.
         /// </summary>
-        public CustomOptions CustomOptions => proto.Options?.CustomOptions ?? CustomOptions.Empty;
+        public CustomOptions CustomOptions
+        {
+            get { return proto.Options != null ? proto.Options.CustomOptions ?? CustomOptions.Empty : CustomOptions.Empty; }
+        }
 
         internal void CrossLink()
         {

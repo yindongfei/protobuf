@@ -255,7 +255,7 @@ namespace Google.Protobuf.WellKnownTypes
 
             foreach (var name in parts)
             {
-                var field = descriptor?.FindFieldByName(name);
+                var field = descriptor != null ? descriptor.FindFieldByName(name) : null;
                 if (field == null)
                 {
                     return false;
@@ -342,7 +342,7 @@ namespace Google.Protobuf.WellKnownTypes
             /// Default behavior is to merge the source message field into the
             /// destination message field.
             /// </summary>
-            public bool ReplaceMessageFields { get; set; } = false;
+            public bool ReplaceMessageFields { get { return  false; } }
 
             /// <summary>
             /// Whether to replace repeated fields (i.e., discard existing content in
@@ -350,7 +350,7 @@ namespace Google.Protobuf.WellKnownTypes
             /// Default behavior is to append elements from source repeated field to the
             /// destination repeated field.
             /// </summary>
-            public bool ReplaceRepeatedFields { get; set; } = false;
+            public bool ReplaceRepeatedFields { get { return  false; } }
 
             /// <summary>
             /// Whether to replace primitive (non-repeated and non-message) fields in
@@ -364,7 +364,7 @@ namespace Google.Protobuf.WellKnownTypes
             /// unset, the default value of the source field is copied to the
             /// destination.
             /// </summary>
-            public bool ReplacePrimitiveFields { get; set; } = false;
+            public bool ReplacePrimitiveFields { get { return  false; } }
         }
     }
 }
