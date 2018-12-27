@@ -30,6 +30,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -255,7 +256,9 @@ namespace Google.Protobuf
         {
             if (source.Descriptor != destination.Descriptor)
             {
-                throw new InvalidProtocolBufferException($"source ({source.Descriptor}) and destination ({destination.Descriptor}) descriptor must be equal");
+                throw new InvalidProtocolBufferException(string.Format(
+                    "source ({0}) and destination ({1}) descriptor must be equal", source.Descriptor,
+                    destination.Descriptor));
             }
 
             var descriptor = source.Descriptor;
@@ -264,7 +267,8 @@ namespace Google.Protobuf
                 var field = descriptor.FindFieldByName(entry.Key);
                 if (field == null)
                 {
-                    Debug.WriteLine($"Cannot find field \"{entry.Key}\" in message type \"{descriptor.FullName}\"");
+                    Debug.WriteLine(string.Format("Cannot find field \"{0}\" in message type \"{1}\"", entry.Key,
+                        descriptor.FullName));
                     continue;
                 }
 
@@ -273,7 +277,9 @@ namespace Google.Protobuf
                     if (field.IsRepeated
                         || field.FieldType != FieldType.Message)
                     {
-                        Debug.WriteLine($"Field \"{field.FullName}\" is not a singular message field and cannot have sub-fields.");
+                        Debug.WriteLine(string.Format(
+                            "Field \"{0}\" is not a singular message field and cannot have sub-fields.",
+                            field.FullName));
                         continue;
                     }
 

@@ -267,6 +267,8 @@ namespace Google.Protobuf
         /// </value>
         public int RecursionLimit { get { return recursionLimit; } }
 
+        public int RecursionDepth { get { return recursionDepth; } set { recursionDepth = value; } }
+
         /// <summary>
         /// Internal-only property; when set to true, unknown fields will be discarded while parsing.
         /// </summary>
@@ -466,7 +468,8 @@ namespace Google.Protobuf
             if (startField != endField)
             {
                 throw new InvalidProtocolBufferException(
-                    $"Mismatched end-group tag. Started with field {startField}; ended with field {endField}");
+                    string.Format("Mismatched end-group tag. Started with field {0}; ended with field {1}", startField,
+                        endField));
             }
             recursionDepth--;
         }

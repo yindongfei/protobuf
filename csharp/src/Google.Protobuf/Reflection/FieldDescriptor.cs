@@ -84,7 +84,7 @@ namespace Google.Protobuf.Reflection
                 if (proto.OneofIndex < 0 || proto.OneofIndex >= parent.Proto.OneofDecl.Count)
                 {
                     throw new DescriptorValidationException(this,
-                        $"FieldDescriptorProto.oneof_index is out of range for type {parent.Name}");
+                        string.Format("FieldDescriptorProto.oneof_index is out of range for type {0}", parent.Name));
                 }
                 ContainingOneof = parent.Oneofs[proto.OneofIndex];
             }
@@ -318,7 +318,8 @@ namespace Google.Protobuf.Reflection
                     }
                     else
                     {
-                        throw new DescriptorValidationException(this, $"\"{Proto.TypeName}\" is not a type.");
+                        throw new DescriptorValidationException(this,
+                            string.Format("\"{0}\" is not a type.", Proto.TypeName));
                     }
                 }
 
@@ -326,7 +327,8 @@ namespace Google.Protobuf.Reflection
                 {
                     if (!(typeDescriptor is MessageDescriptor))
                     {
-                        throw new DescriptorValidationException(this, $"\"{Proto.TypeName}\" is not a message type.");
+                        throw new DescriptorValidationException(this,
+                            string.Format("\"{0}\" is not a message type.", Proto.TypeName));
                     }
                     messageType = (MessageDescriptor) typeDescriptor;
 
@@ -339,7 +341,8 @@ namespace Google.Protobuf.Reflection
                 {
                     if (!(typeDescriptor is EnumDescriptor))
                     {
-                        throw new DescriptorValidationException(this, $"\"{Proto.TypeName}\" is not an enum type.");
+                        throw new DescriptorValidationException(this,
+                            string.Format("\"{0}\" is not an enum type.", Proto.TypeName));
                     }
                     enumType = (EnumDescriptor) typeDescriptor;
                 }
@@ -379,7 +382,8 @@ namespace Google.Protobuf.Reflection
             var property = ContainingType.ClrType.GetProperty(propertyName);
             if (property == null)
             {
-                throw new DescriptorValidationException(this, $"Property {propertyName} not found in {ContainingType.ClrType}");
+                throw new DescriptorValidationException(this,
+                    string.Format("Property {0} not found in {1}", propertyName, ContainingType.ClrType));
             }
             return IsMap ? new MapFieldAccessor(property, this)
                 : IsRepeated ? new RepeatedFieldAccessor(property, this)

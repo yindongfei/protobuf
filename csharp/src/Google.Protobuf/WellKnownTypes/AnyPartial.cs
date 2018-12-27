@@ -30,6 +30,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using Google.Protobuf.Reflection;
 
 namespace Google.Protobuf.WellKnownTypes
@@ -95,7 +96,8 @@ namespace Google.Protobuf.WellKnownTypes
             if (GetTypeName(TypeUrl) != target.Descriptor.FullName)
             {
                 throw new InvalidProtocolBufferException(
-                    $"Full type name for {target.Descriptor.Name} is {target.Descriptor.FullName}; Any message's type url is {TypeUrl}");
+                    string.Format("Full type name for {0} is {1}; Any message's type url is {2}",
+                        target.Descriptor.Name, target.Descriptor.FullName, TypeUrl));
             }
             target.MergeFrom(Value);
             return target;

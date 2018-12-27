@@ -31,10 +31,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
-#if NET35
+using UnityEngine;
+
+#if NET35 && !UNITY_2018_1_OR_NEWER
 // Needed for ReadOnlyDictionary, which does not exist in .NET 3.5
 using Google.Protobuf.Collections;
 #endif
@@ -81,7 +83,10 @@ namespace Google.Protobuf.Reflection
             NestedTypes = DescriptorUtil.ConvertAndMakeReadOnly(
                 proto.NestedType,
                 (type, index) =>
-                new MessageDescriptor(type, file, this, index, generatedCodeInfo != null ? generatedCodeInfo.NestedTypes[index] : null));
+                {
+                    return new MessageDescriptor(type, file, this, index,
+                        generatedCodeInfo != null ? generatedCodeInfo.NestedTypes[index] : null);
+                });
 
             EnumTypes = DescriptorUtil.ConvertAndMakeReadOnly(
                 proto.EnumType,

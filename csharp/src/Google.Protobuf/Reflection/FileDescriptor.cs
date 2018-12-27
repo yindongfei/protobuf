@@ -132,7 +132,7 @@ namespace Google.Protobuf.Reflection
             {
                 // We don't have much extra information to give at this point unfortunately. If this becomes a problem,
                 // we can pass in the complete path and report that and the file name.
-                throw new InvalidProtocolBufferException($"Invalid descriptor location path: index out of range");
+                throw new InvalidProtocolBufferException("Invalid descriptor location path: index out of range");
             }
             return list[index];
         }
@@ -400,7 +400,7 @@ namespace Google.Protobuf.Reflection
             }
             catch (DescriptorValidationException e)
             {
-                throw new ArgumentException($"Invalid embedded descriptor for \"{proto.Name}\".", e);
+                throw new ArgumentException(string.Format("Invalid embedded descriptor for \"{0}\".", proto.Name), e);
             }
         }
 
@@ -430,7 +430,7 @@ namespace Google.Protobuf.Reflection
                     FileDescriptor dependency;
                     if (!descriptorsByName.TryGetValue(dependencyName, out dependency))
                     {
-                        throw new ArgumentException($"Dependency missing: {dependencyName}");
+                        throw new ArgumentException(string.Format("Dependency missing: {0}", dependencyName));
                     }
                     dependencies.Add(dependency);
                 }
@@ -442,7 +442,7 @@ namespace Google.Protobuf.Reflection
                 descriptors.Add(descriptor);
                 if (descriptorsByName.ContainsKey(descriptor.Name))
                 {
-                    throw new ArgumentException($"Duplicate descriptor name: {descriptor.Name}");
+                    throw new ArgumentException(string.Format("Duplicate descriptor name: {0}", descriptor.Name));
                 }
                 descriptorsByName.Add(descriptor.Name, descriptor);
             }
@@ -457,7 +457,7 @@ namespace Google.Protobuf.Reflection
         /// </returns>
         public override string ToString()
         {
-            return $"FileDescriptor for {Name}";
+            return string.Format("FileDescriptor for {0}", Name);
         }
 
         /// <summary>

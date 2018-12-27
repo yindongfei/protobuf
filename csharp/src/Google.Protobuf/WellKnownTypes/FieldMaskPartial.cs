@@ -82,7 +82,8 @@ namespace Google.Protobuf.WellKnownTypes
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Invalid field mask to be converted to JSON: {firstInvalid}");
+                    throw new InvalidOperationException(string.Format("Invalid field mask to be converted to JSON: {0}",
+                        firstInvalid));
                 }
             }
         }
@@ -170,7 +171,8 @@ namespace Google.Protobuf.WellKnownTypes
                 var field = descriptor.FindFieldByNumber(fieldNumber);
                 if (field == null)
                 {
-                    throw new ArgumentNullException($"{fieldNumber} is not a valid field number for {descriptor.Name}");
+                    throw new ArgumentNullException(string.Format("{0} is not a valid field number for {1}",
+                        fieldNumber, descriptor.Name));
                 }
 
                 mask.Paths.Add(field.Name);

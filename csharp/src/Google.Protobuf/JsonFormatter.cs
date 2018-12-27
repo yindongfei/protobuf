@@ -545,7 +545,8 @@ namespace Google.Protobuf
             MessageDescriptor descriptor = settings.TypeRegistry.Find(typeName);
             if (descriptor == null)
             {
-                throw new InvalidOperationException($"Type registry has no descriptor for type name '{typeName}'");
+                throw new InvalidOperationException(string.Format("Type registry has no descriptor for type name '{0}'",
+                    typeName));
             }
             IMessage message = descriptor.Parser.ParseFrom(data);
             writer.Write("{ ");

@@ -594,6 +594,7 @@ namespace Google.Protobuf.Collections
         {
             private readonly FieldCodec<TKey> keyCodec;
             private readonly FieldCodec<TValue> valueCodec;
+            private readonly FieldCodec<bool> delCodec;
             private readonly uint mapTag;
 
             /// <summary>
@@ -607,6 +608,7 @@ namespace Google.Protobuf.Collections
             {
                 this.keyCodec = keyCodec;
                 this.valueCodec = valueCodec;
+                this.delCodec = FieldCodec.ForBool(3 << 3);
                 this.mapTag = mapTag;
             }
 
@@ -629,6 +631,7 @@ namespace Google.Protobuf.Collections
                 private readonly Codec codec;
                 internal TKey Key { get; set; }
                 internal TValue Value { get; set; }
+                internal bool Del { get; set; }
 
                 internal MessageAdapter(Codec codec)
                 {
@@ -639,6 +642,7 @@ namespace Google.Protobuf.Collections
                 {
                     Key = codec.keyCodec.DefaultValue;
                     Value = codec.valueCodec.DefaultValue;
+                    Del = false;
                 }
 
                 public void MergeFrom(CodedInputStream input)
@@ -653,6 +657,10 @@ namespace Google.Protobuf.Collections
                         else if (tag == codec.valueCodec.Tag)
                         {
                             Value = codec.valueCodec.Read(input);
+                        }
+                        else if (tag == codec.delCodec.Tag)
+                        {
+                            Del = codec.delCodec.Read(input);
                         }
                         else 
                         {

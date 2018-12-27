@@ -196,7 +196,8 @@ namespace Google.Protobuf
                         }
                         if (!seenOneofs.Add(field.ContainingOneof))
                         {
-                            throw new InvalidProtocolBufferException($"Multiple values specified for oneof {field.ContainingOneof.Name}");
+                            throw new InvalidProtocolBufferException(
+                                string.Format("Multiple values specified for oneof {0}", field.ContainingOneof.Name));
                         }
                     }
                     MergeField(message, field, tokenizer);
@@ -524,7 +525,8 @@ namespace Google.Protobuf
             MessageDescriptor descriptor = settings.TypeRegistry.Find(typeName);
             if (descriptor == null)
             {
-                throw new InvalidOperationException($"Type registry has no descriptor for type name '{typeName}'");
+                throw new InvalidOperationException(string.Format("Type registry has no descriptor for type name '{0}'",
+                    typeName));
             }
 
             // Now replay the token stream we've already read and anything that remains of the object, just parsing it
@@ -556,13 +558,14 @@ namespace Google.Protobuf
             // TODO: What about an absent Int32Value, for example?
             if (token.Type != JsonToken.TokenType.Name || token.StringValue != JsonFormatter.AnyWellKnownTypeValueField)
             {
-                throw new InvalidProtocolBufferException($"Expected '{JsonFormatter.AnyWellKnownTypeValueField}' property for well-known type Any body");
+                throw new InvalidProtocolBufferException(string.Format(
+                    "Expected '{0}' property for well-known type Any body", JsonFormatter.AnyWellKnownTypeValueField));
             }
             Merge(body, tokenizer);
             token = tokenizer.Next();
             if (token.Type != JsonToken.TokenType.EndObject)
             {
-                throw new InvalidProtocolBufferException($"Expected end-object token after @type/value for well-known type");
+                throw new InvalidProtocolBufferException("Expected end-object token after @type/value for well-known type");
             }
         }
 
@@ -646,7 +649,8 @@ namespace Google.Protobuf
                                 {
                                     return float.NegativeInfinity;
                                 }
-                                throw new InvalidProtocolBufferException($"Value out of range: {value}");
+                                throw new InvalidProtocolBufferException(
+                                    string.Format("Value out of range: {0}", value));
                             }
                             return (float) value;
                         case FieldType.Enum:
@@ -655,12 +659,13 @@ namespace Google.Protobuf
                             // Note that we deliberately don't check that it's a known value.
                             return (int) value;
                         default:
-                            throw new InvalidProtocolBufferException($"Unsupported conversion from JSON number for field type {field.FieldType}");
+                            throw new InvalidProtocolBufferException(string.Format(
+                                "Unsupported conversion from JSON number for field type {0}", field.FieldType));
                     }
                 }
                 catch (OverflowException)
                 {
-                    throw new InvalidProtocolBufferException($"Value out of range: {value}");
+                    throw new InvalidProtocolBufferException(string.Format("Value out of range: {0}", value));
                 }
             }
         }
@@ -669,11 +674,11 @@ namespace Google.Protobuf
         {
             if (double.IsInfinity(value) || double.IsNaN(value))
             {
-                throw new InvalidProtocolBufferException($"Value not an integer: {value}");
+                throw new InvalidProtocolBufferException(string.Format("Value not an integer: {0}", value));
             }
             if (value != Math.Floor(value))
             {
-                throw new InvalidProtocolBufferException($"Value not an integer: {value}");
+                throw new InvalidProtocolBufferException(string.Format("Value not an integer: {0}", value));
             }            
         }
 
@@ -718,12 +723,14 @@ namespace Google.Protobuf
                     var enumValue = field.EnumType.FindValueByName(text);
                     if (enumValue == null)
                     {
-                        throw new InvalidProtocolBufferException($"Invalid enum value: {text} for enum type: {field.EnumType.FullName}");
+                        throw new InvalidProtocolBufferException(
+                            string.Format("Invalid enum value: {0} for enum type: {1}", text, field.EnumType.FullName));
                     }
                     // Just return it as an int, and let the CLR convert it.
                     return enumValue.Number;
                 default:
-                    throw new InvalidProtocolBufferException($"Unsupported conversion from JSON string for field type {field.FieldType}");
+                    throw new InvalidProtocolBufferException(
+                        string.Format("Unsupported conversion from JSON string for field type {0}", field.FieldType));
             }
         }
 
@@ -740,20 +747,20 @@ namespace Google.Protobuf
             // Can't prohibit this with NumberStyles.
             if (text.StartsWith("+"))
             {
-                throw new InvalidProtocolBufferException($"Invalid numeric value: {text}");
+                throw new InvalidProtocolBufferException(string.Format("Invalid numeric value: {0}", text));
             }
             if (text.StartsWith("0") && text.Length > 1)
             {
                 if (text[1] >= '0' && text[1] <= '9')
                 {
-                    throw new InvalidProtocolBufferException($"Invalid numeric value: {text}");
+                    throw new InvalidProtocolBufferException(string.Format("Invalid numeric value: {0}", text));
                 }
             }
             else if (text.StartsWith("-0") && text.Length > 2)
             {
                 if (text[2] >= '0' && text[2] <= '9')
                 {
-                    throw new InvalidProtocolBufferException($"Invalid numeric value: {text}");
+                    throw new InvalidProtocolBufferException(string.Format("Invalid numeric value: {0}", text));
                 }
             }
             try
@@ -762,11 +769,11 @@ namespace Google.Protobuf
             }
             catch (FormatException)
             {
-                throw new InvalidProtocolBufferException($"Invalid numeric value for type: {text}");
+                throw new InvalidProtocolBufferException(string.Format("Invalid numeric value for type: {0}", text));
             }
             catch (OverflowException)
             {
-                throw new InvalidProtocolBufferException($"Value out of range: {text}");
+                throw new InvalidProtocolBufferException(string.Format("Value out of range: {0}", text));
             }
         }
 
@@ -781,7 +788,7 @@ namespace Google.Protobuf
                 (isNegativeInfinity && text != "-Infinity") ||
                 (isNaN && text != "NaN"))
             {
-                throw new InvalidProtocolBufferException($"Invalid numeric value: {text}");
+                throw new InvalidProtocolBufferException(string.Format("Invalid numeric value: {0}", text));
             }
         }
 
@@ -794,7 +801,8 @@ namespace Google.Protobuf
             var match = TimestampRegex.Match(token.StringValue);
             if (!match.Success)
             {
-                throw new InvalidProtocolBufferException($"Invalid Timestamp value: {token.StringValue}");
+                throw new InvalidProtocolBufferException(string.Format("Invalid Timestamp value: {0}",
+                    token.StringValue));
             }
             var dateTime = match.Groups["datetime"].Value;
             var subseconds = match.Groups["subseconds"].Value;
@@ -894,14 +902,16 @@ namespace Google.Protobuf
                 }
                 if (!Duration.IsNormalized(seconds, nanos))
                 {
-                    throw new InvalidProtocolBufferException($"Invalid Duration value: {token.StringValue}");
+                    throw new InvalidProtocolBufferException(string.Format("Invalid Duration value: {0}",
+                        token.StringValue));
                 }
                 message.Descriptor.Fields[Duration.SecondsFieldNumber].Accessor.SetValue(message, seconds);
                 message.Descriptor.Fields[Duration.NanosFieldNumber].Accessor.SetValue(message, nanos);
             }
             catch (FormatException)
             {
-                throw new InvalidProtocolBufferException($"Invalid Duration value: {token.StringValue}");
+                throw new InvalidProtocolBufferException(
+                    string.Format("Invalid Duration value: {0}", token.StringValue));
             }
         }
 
@@ -961,7 +971,7 @@ namespace Google.Protobuf
                     builder.Append(c);
                     if (c == '_')
                     {
-                        throw new InvalidProtocolBufferException($"Invalid field mask: {text}");
+                        throw new InvalidProtocolBufferException(string.Format("Invalid field mask: {0}", text));
                     }
                     wasNotUnderscore = true;
                     wasNotCap = true;
